@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Discover from "./Discover";
 import LawyerDashboard from "./LawyerDashboard";
 
 const Index = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [userType, setUserType] = useState<"client" | "lawyer" | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -18,9 +18,12 @@ const Index = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        navigate("/auth");
+        setIsAuthenticated(false);
+        setLoading(false);
         return;
       }
+
+      setIsAuthenticated(true);
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -33,7 +36,7 @@ const Index = () => {
       }
     } catch (error) {
       console.error("Error checking auth:", error);
-      navigate("/auth");
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
@@ -48,6 +51,10 @@ const Index = () => {
         </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
   }
 
   if (userType === "lawyer") {
