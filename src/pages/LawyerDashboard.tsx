@@ -45,8 +45,9 @@ const LawyerDashboard = () => {
 
       if (error) throw error;
       setServices(data || []);
-    } catch (error: any) {
-      toast.error("Failed to load services");
+    } catch (error: unknown) {
+      console.error('Error fetching services:', error);
+      toast.error((error as { message?: string })?.message || 'Failed to load services');
     }
   };
 
@@ -64,7 +65,7 @@ const LawyerDashboard = () => {
 
       const { error } = await supabase.from("lawyer_services").insert({
         lawyer_id: user.id,
-        category: newService.category as any,
+        category: newService.category,
         title: newService.title,
         description: newService.description,
         price: parseFloat(newService.price),
@@ -76,8 +77,9 @@ const LawyerDashboard = () => {
       setShowAddForm(false);
       setNewService({ category: "bail_application", title: "", description: "", price: "" });
       fetchServices();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to add service");
+    } catch (error: unknown) {
+      console.error('Error adding service:', error);
+      toast.error((error as { message?: string })?.message || 'Failed to add service');
     }
   };
 
@@ -92,8 +94,9 @@ const LawyerDashboard = () => {
 
       toast.success("Service deleted");
       fetchServices();
-    } catch (error: any) {
-      toast.error("Failed to delete service");
+    } catch (error: unknown) {
+      console.error('Error deleting service:', error);
+      toast.error((error as { message?: string })?.message || 'Failed to delete service');
     }
   };
 

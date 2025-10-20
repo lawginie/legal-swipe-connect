@@ -25,7 +25,7 @@ interface Match {
 const Chats = () => {
   const navigate = useNavigate();
   const [matches, setMatches] = useState<Match[]>([]);
-  const [userType, setUserType] = useState<"client" | "lawyer">("client");
+  const [userType, setUserType] = useState<"client" | "lawyer" | "base">("client");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,6 +34,17 @@ const Chats = () => {
 
   const fetchMatches = async () => {
     try {
+      // Check for offline mode first (base session)
+      const authMode = localStorage.getItem('auth_mode');
+      const baseSession = localStorage.getItem('base_session');
+      
+      if (authMode === 'offline' && baseSession) {
+        const offlineSession = JSON.parse(baseSession);
+        setUserType(offlineSession.user.user_metadata.user_type);
+        setLoading(false);
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -67,7 +78,7 @@ const Chats = () => {
       })) || [];
 
       setMatches(processedMatches);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching matches:", error);
     } finally {
       setLoading(false);
@@ -129,7 +140,7 @@ const Chats = () => {
         )}
       </div>
 
-      <BottomNav userType={userType} />
+      <BottomNav userType={userType as "client" | "lawyer" | "base"} />
     </div>
   );
 };

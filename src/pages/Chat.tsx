@@ -7,6 +7,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { ArrowLeft, Send } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import USDCPayButton from "@/components/USDCPayButton";
 
 interface Message {
   id: string;
@@ -20,7 +21,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [otherUser, setOtherUser] = useState<any>(null);
+  const [otherUser, setOtherUser] = useState<{ id: string; full_name?: string; profile_image_url?: string } | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [roomId, setRoomId] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -37,6 +38,40 @@ const Chat = () => {
 
   const initChat = async () => {
     try {
+      // Check for offline mode (base session) first
+      const authMode = localStorage.getItem('auth_mode');
+      const baseSession = localStorage.getItem('base_session');
+      
+      if (authMode === 'offline' && baseSession) {
+        const offlineSession = JSON.parse(baseSession);
+        setCurrentUserId(offlineSession.user.id);
+        
+        // For base users, create mock chat data
+        setOtherUser({
+          id: 'mock-lawyer-1',
+          full_name: 'Demo Lawyer',
+          email: 'demo@lawyer.com',
+          user_type: 'lawyer'
+        });
+        
+        setMessages([
+          {
+            id: '1',
+            content: 'Hello! This is a demo chat for the base account.',
+            sender_id: 'mock-lawyer-1',
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '2',
+            content: 'You can test the chat functionality here.',
+            sender_id: offlineSession.user.id,
+            created_at: new Date().toISOString()
+          }
+        ]);
+        
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       setCurrentUserId(user.id);
@@ -107,17 +142,49 @@ const Chat = () => {
       return () => {
         supabase.removeChannel(channel);
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error initializing chat:", error);
-      toast.error("Failed to load chat");
+      toast.error((error as { message?: string })?.message || "Failed to load chat");
     }
   };
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !roomId) return;
+    if (!newMessage.trim()) return;
 
     try {
+      // Check for offline mode (base session)
+      const authMode = localStorage.getItem('auth_mode');
+      
+      if (authMode === 'offline') {
+        // For base users, add message to local state
+        const newMsg = {
+          id: Date.now().toString(),
+          content: newMessage.trim(),
+          sender_id: currentUserId,
+          created_at: new Date().toISOString()
+        };
+        
+        setMessages(prev => [...prev, newMsg]);
+        setNewMessage("");
+        
+        // Simulate a response after a delay
+        setTimeout(() => {
+          const response = {
+            id: (Date.now() + 1).toString(),
+            content: "Thanks for your message! This is a demo response.",
+            sender_id: 'mock-lawyer-1',
+            created_at: new Date().toISOString()
+          };
+          setMessages(prev => [...prev, response]);
+        }, 1000);
+        
+        return;
+      }
+
+      // Original Supabase logic for authenticated users
+      if (!roomId) return;
+      
       const { error } = await supabase.from("messages").insert({
         room_id: roomId,
         sender_id: currentUserId,
@@ -127,9 +194,9 @@ const Chat = () => {
       if (error) throw error;
 
       setNewMessage("");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error sending message:", error);
-      toast.error("Failed to send message");
+      toast.error((error as { message?: string })?.message || "Failed to send message");
     }
   };
 
@@ -147,6 +214,12 @@ const Chat = () => {
                 {otherUser.full_name.charAt(0)}
               </Avatar>
               <h2 className="font-semibold">{otherUser.full_name}</h2>
+              {/* Pay with USDC (only when other user has a wallet address) */}
+              {otherUser.wallet_address && (
+                <div className="ml-auto">
+                  <USDCPayButton recipient={otherUser.wallet_address} />
+                </div>
+              )}
             </>
           )}
         </div>

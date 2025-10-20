@@ -3,14 +3,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface BottomNavProps {
-  userType: "client" | "lawyer";
+  userType: "client" | "lawyer" | "base";
 }
 
 const BottomNav = ({ userType }: BottomNavProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const navItems = userType === "client" 
+  const navItems = (userType === "client" || userType === "base") 
     ? [
         { icon: Home, label: "Discover", path: "/" },
         { icon: MessageCircle, label: "Chats", path: "/chats" },

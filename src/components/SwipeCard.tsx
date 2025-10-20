@@ -1,47 +1,16 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, DollarSign, X, Heart } from "lucide-react";
+import { MapPin, X, Heart, Star, Clock, Shield, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface LawyerService {
-  id: string;
-  category: string;
-  title: string;
-  description: string;
-  price: number;
-  currency: string;
-}
-
-interface LawyerProfile {
-  id: string;
-  full_name: string;
-  bio: string;
-  profile_image_url?: string;
-  latitude?: number;
-  longitude?: number;
-  distance?: number;
-  services: LawyerService[];
-}
+import { MockProfile } from "@/data/mockProfiles";
 
 interface SwipeCardProps {
-  lawyer: LawyerProfile;
+  profile: MockProfile;
   onSwipe: (direction: "left" | "right") => void;
 }
 
-const categoryLabels: Record<string, string> = {
-  bail_application: "Bail Application",
-  debt_review: "Debt Review",
-  maintenance: "Maintenance",
-  eviction: "Eviction",
-  debt_collection: "Debt Collection",
-  letter_of_demand: "Letter of Demand",
-  contract_review: "Contract Review",
-  divorce: "Divorce",
-  other: "Other",
-};
-
-const SwipeCard = ({ lawyer, onSwipe }: SwipeCardProps) => {
+const SwipeCard = ({ profile, onSwipe }: SwipeCardProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
 
@@ -77,11 +46,17 @@ const SwipeCard = ({ lawyer, onSwipe }: SwipeCardProps) => {
       onTouchEnd={handleTouchEnd}
     >
       {/* Profile Image */}
-      <div className="h-64 bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-6xl text-primary-foreground font-bold">
-        {lawyer.profile_image_url ? (
-          <img src={lawyer.profile_image_url} alt={lawyer.full_name} className="w-full h-full object-cover" />
+      <div className="h-64 bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-6xl text-primary-foreground font-bold relative">
+        {profile.image ? (
+          <img src={profile.image} alt={profile.name} className="w-full h-full object-cover" />
         ) : (
-          lawyer.full_name.charAt(0)
+          profile.name.charAt(0)
+        )}
+        {/* Verification badge */}
+        {profile.verified && (
+          <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1">
+            <CheckCircle className="h-4 w-4 text-white" />
+          </div>
         )}
       </div>
 
@@ -100,38 +75,65 @@ const SwipeCard = ({ lawyer, onSwipe }: SwipeCardProps) => {
       {/* Content */}
       <div className="p-6 space-y-4">
         <div>
-          <h2 className="text-2xl font-bold">{lawyer.full_name}</h2>
-          {lawyer.distance !== undefined && (
-            <div className="flex items-center gap-1 text-muted-foreground mt-1">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">{profile.name}</h2>
+            <Badge variant={profile.userType === 'lawyer' ? 'default' : 'secondary'}>
+              {profile.userType === 'lawyer' ? 'Lawyer' : 'Client'}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
+            <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
-              <span>{lawyer.distance.toFixed(1)} km away</span>
+              <span>{profile.location}</span>
             </div>
-          )}
+            <div className="flex items-center gap-1">
+              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <span>{profile.rating}</span>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">Age: {profile.age}</p>
         </div>
 
-        {lawyer.bio && (
-          <p className="text-sm text-muted-foreground line-clamp-2">{lawyer.bio}</p>
+        <p className="text-sm text-muted-foreground line-clamp-3">{profile.bio}</p>
+
+        {/* Lawyer-specific info */}
+        {profile.userType === 'lawyer' && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-blue-500" />
+              <span className="font-medium text-sm">{profile.specialization}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-green-500" />
+              <span className="text-sm">{profile.experience} experience</span>
+            </div>
+          </div>
         )}
 
-        {/* Services */}
+        {/* Client-specific info */}
+        {profile.userType === 'client' && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-orange-500" />
+              <span className="font-medium text-sm">{profile.legalIssue}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-red-500" />
+              <span className="text-sm">Urgency: {profile.urgency}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Languages and Availability */}
         <div className="space-y-2">
-          <h3 className="font-semibold">Services:</h3>
-          <div className="space-y-2 max-h-40 overflow-y-auto">
-            {lawyer.services.map((service) => (
-              <div key={service.id} className="flex items-center justify-between text-sm">
-                <div className="flex-1">
-                  <Badge variant="secondary" className="mb-1">
-                    {categoryLabels[service.category] || service.category}
-                  </Badge>
-                  <p className="font-medium">{service.title}</p>
-                </div>
-                <div className="flex items-center gap-1 text-accent font-bold">
-                  <DollarSign className="h-4 w-4" />
-                  <span>{service.price}</span>
-                </div>
-              </div>
+          <div className="flex flex-wrap gap-1">
+            {profile.languages.map((lang) => (
+              <Badge key={lang} variant="outline" className="text-xs">
+                {lang}
+              </Badge>
             ))}
           </div>
+          <p className="text-xs text-muted-foreground">{profile.availability}</p>
         </div>
 
         {/* Action buttons */}

@@ -13,7 +13,7 @@ import { LogOut, Save } from "lucide-react";
 const Profile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState<"client" | "lawyer">("client");
+  const [userType, setUserType] = useState<"client" | "lawyer" | "base">("client");
   const [profile, setProfile] = useState({
     full_name: "",
     email: "",
@@ -29,6 +29,31 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
+      // Check for offline mode (base session)
+      const authMode = localStorage.getItem('auth_mode');
+      const baseSession = localStorage.getItem('base_session');
+      
+      if (authMode === 'offline' && baseSession) {
+        try {
+          const offlineSession = JSON.parse(baseSession);
+          setUserType(offlineSession.user.user_metadata.user_type);
+          setProfile({
+            full_name: offlineSession.user.user_metadata.full_name || 'Base User',
+            email: offlineSession.user.email || 'base@example.com',
+            phone: '+1-000-000-0000',
+            bio: 'Base account with full access to all features',
+            latitude: "",
+            longitude: "",
+          });
+          return;
+        } catch (error) {
+          console.error("Error parsing base session:", error);
+          localStorage.removeItem('auth_mode');
+          localStorage.removeItem('base_session');
+        }
+      }
+
+      // Regular Supabase authentication
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -51,9 +76,9 @@ const Profile = () => {
           longitude: data.longitude?.toString() || "",
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching profile:", error);
-      toast.error("Failed to load profile");
+      toast.error((error as { message?: string })?.message || "Failed to load profile");
     }
   };
 
@@ -65,7 +90,7 @@ const Profile = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const updates: any = {
+      const updates: Record<string, string | number> = {
         full_name: profile.full_name,
         phone: profile.phone,
         bio: profile.bio,
@@ -84,16 +109,29 @@ const Profile = () => {
       if (error) throw error;
 
       toast.success("Profile updated!");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating profile:", error);
-      toast.error(error.message || "Failed to update profile");
+      toast.error((error as { message?: string })?.message || "Failed to update profile");
     } finally {
       setLoading(false);
     }
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    // Check if we're in offline mode
+    const authMode = localStorage.getItem('auth_mode');
+    
+    if (authMode === 'offline') {
+      // Clear offline session data
+      localStorage.removeItem('auth_mode');
+      localStorage.removeItem('base_session');
+      toast.success("Logged out from Base Admin (Offline Mode)");
+    } else {
+      // Regular Supabase logout
+      await supabase.auth.signOut();
+      toast.success("Logged out successfully");
+    }
+    
     navigate("/auth");
   };
 
@@ -196,7 +234,7 @@ const Profile = () => {
         </Card>
       </div>
 
-      <BottomNav userType={userType} />
+      <BottomNav userType={userType as "client" | "lawyer" | "base"} />
     </div>
   );
 };
