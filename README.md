@@ -1,73 +1,253 @@
-# Welcome to your Lovable project
+# Legal Swipe Connect 🏛️⚖️
 
-## Project info
+A revolutionary Tinder-style mobile app connecting clients with lawyers. Swipe right on legal expertise, match with professionals, and access legal services seamlessly with Web3 payments.
 
-**URL**: https://lovable.dev/projects/f39d0fd5-f706-4a6a-955e-8d4312c92914
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.3-61dafb.svg)](https://reactjs.org/)
 
-## How can I edit this code?
+## 🌟 Features
 
-There are several ways of editing your application.
+- 🔐 **Base Account Authentication** - Secure wallet-based authentication
+- 💼 **Smart Matching** - Swipe through lawyer profiles based on specialization
+- 💬 **AI Chatbot** - Context-aware legal consultations with AI-powered responses
+- 💳 **Base Pay Integration** - Pay for legal services with USDC on Base network
+- 📊 **Activity Tracking** - Complete user activity and session management
+- 🔄 **Real-time Chat** - Instant messaging with matched lawyers
+- 📱 **Mobile-First Design** - Optimized for mobile and desktop
+- 🎯 **Service Categories** - Bail, Debt Review, Maintenance, Eviction, Letter of Demand, Debt Collection
 
-**Use Lovable**
+## 🛠️ Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f39d0fd5-f706-4a6a-955e-8d4312c92914) and start prompting.
+### Frontend
+- **Framework**: React 18.3.1 + TypeScript 5.8
+- **Build Tool**: Vite 5.4.19
+- **UI Library**: Shadcn/ui + Radix UI
+- **Styling**: Tailwind CSS 3.4
+- **State Management**: React Query (TanStack)
+- **Routing**: React Router v6
+- **Web3**: Base Account SDK, Ethers.js 6.15
+- **Payments**: Base Pay (USDC)
 
-Changes made via Lovable will be committed automatically to this repo.
+### Backend
+- **Runtime**: Node.js + Express 5.1
+- **Database**: MongoDB 8.19 + Mongoose
+- **Authentication**: JWT (jsonwebtoken 9.0)
+- **Security**: Helmet, CORS, Rate Limiting
+- **API**: RESTful API (30+ endpoints)
 
-**Use your preferred IDE**
+### Database Collections
+- Users, Sessions, UserProfiles, UserActivity
+- Lawyers, Swipes, Matches, ChatRooms
+- Payments, Services
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
+- Node.js 18+ and npm
+- MongoDB (local or MongoDB Atlas)
+- Git
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```bash
+# Clone the repository
+git clone https://github.com/lawginie/legal-swipe-connect.git
+cd legal-swipe-connect
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your configuration
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Seed the database with 30 lawyers
+npm run seed
+
+# Start the API server (Terminal 1)
+npm run dev:api
+
+# Start the frontend (Terminal 2)
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at:
+- **Frontend**: http://localhost:8080
+- **API**: http://localhost:3001
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📝 Environment Variables
 
-**Use GitHub Codespaces**
+Create a `.env` file in the root directory:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```env
+# Supabase (Optional - for additional auth)
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_PUBLISHABLE_KEY=your-key
 
-## What technologies are used for this project?
+# MongoDB
+MONGODB_URI=mongodb://localhost:27017/legal-swipe-connect
+MONGODB_DB_NAME=legal-swipe-connect
 
-This project is built with:
+# API Configuration
+PORT=3001
+NODE_ENV=development
+JWT_SECRET=your-strong-jwt-secret-here
+CORS_ORIGIN=http://localhost:8080
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Frontend
+VITE_API_URL=http://localhost:3001/api
+```
 
-## How can I deploy this project?
+## 📚 Available Scripts
 
-Simply open [Lovable](https://lovable.dev/projects/f39d0fd5-f706-4a6a-955e-8d4312c92914) and click on Share -> Publish.
+```bash
+npm run dev          # Start frontend development server
+npm run dev:api      # Start backend API server
+npm run seed         # Populate database with 30 lawyers
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run test         # Run tests
+npm run lint         # Run ESLint
+```
 
-## Can I connect a custom domain to my Lovable project?
+## 🏗️ Project Structure
 
-Yes, you can!
+```
+legal-swipe-connect/
+├── src/
+│   ├── components/        # React components
+│   ├── pages/            # Page components (Auth, Discover, Chat, etc.)
+│   ├── hooks/            # Custom React hooks (useAuth, etc.)
+│   ├── services/         # API client and services
+│   ├── server/           # Backend Express server
+│   │   ├── api/          # API route handlers
+│   │   ├── models/       # MongoDB models
+│   │   ├── middleware/   # Authentication middleware
+│   │   └── seeds/        # Database seeding scripts
+│   ├── data/             # Mock data (30 lawyer profiles)
+│   ├── utils/            # Utility functions
+│   └── config/           # Configuration files
+├── public/               # Static assets
+└── docs/                 # Documentation (7 guides)
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🔑 Key Features Explained
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### 1. Swipe Matching
+- Browse lawyer profiles with intuitive swipe gestures
+- Filter by specialization and location
+- Card stack interface with visual feedback
+- Keyboard support (Arrow Left/Right)
+
+### 2. Authentication Flow
+```
+User → Connect Base Wallet → Sign Message → JWT Token → MongoDB Session → Start Swiping
+```
+
+### 3. AI Chatbot
+- Context-aware responses based on lawyer specialization
+- Natural language processing
+- Stored chat history in MongoDB
+- 1-2 second response delay for natural feel
+
+### 4. Payment System
+- Pay for legal services with USDC
+- Base Pay integration (Chain ID: 8453)
+- Transaction tracking in database
+- Payment history for users
+
+### 5. Activity Tracking
+- Every user action logged (swipes, matches, chats, payments)
+- Complete audit trail
+- Analytics-ready data structure
+- Session management across devices
+
+## 📖 Documentation
+
+Comprehensive documentation available:
+
+- **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** - Complete setup and deployment guide
+- **[API_README.md](./API_README.md)** - API endpoint documentation
+- **[BASE_AUTH_INTEGRATION_GUIDE.md](./BASE_AUTH_INTEGRATION_GUIDE.md)** - Authentication implementation
+- **[INTEGRATION_EXAMPLES.md](./INTEGRATION_EXAMPLES.md)** - Code examples for components
+- **[PRODUCTION_READINESS_REPORT.md](./PRODUCTION_READINESS_REPORT.md)** - Production deployment checklist
+- **[CRITICAL_FIXES.md](./CRITICAL_FIXES.md)** - Pre-production security fixes
+- **[MONGODB_SETUP_COMPLETE.md](./MONGODB_SETUP_COMPLETE.md)** - Database setup guide
+
+## 🚢 Deployment
+
+### Frontend (Vercel/Netlify)
+```bash
+npm run build
+# Deploy dist/ folder
+```
+
+### Backend (Railway/Render/Heroku)
+```bash
+# Set environment variables
+# Deploy with npm run dev:api
+```
+
+See [SETUP_GUIDE.md](./SETUP_GUIDE.md) for detailed deployment instructions.
+
+## 🔒 Security Features
+
+- JWT authentication with 7-day expiry
+- Rate limiting (100 requests per 15 minutes)
+- Helmet.js security headers
+- CORS protection with whitelist
+- MongoDB injection protection
+- Session management with TTL indexes
+- Automatic logout on wallet disconnect
+
+## 🧪 Testing
+
+```bash
+npm run test              # Run all tests
+npm run test:coverage     # Generate coverage report
+npm run test:watch        # Watch mode
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 👥 Authors
+
+- **Lawginie Team** - [GitHub](https://github.com/lawginie)
+
+## 🙏 Acknowledgments
+
+- Base Account SDK for Web3 authentication
+- Shadcn/ui for beautiful UI components
+- MongoDB for flexible data storage
+- Unsplash for lawyer profile images
+
+## 📞 Support
+
+For issues and questions:
+- Open an issue on [GitHub](https://github.com/lawginie/legal-swipe-connect/issues)
+- Review documentation in the `/docs` folder
+
+## 🗺️ Roadmap
+
+- [ ] Email verification system
+- [ ] Push notifications for matches
+- [ ] Video consultation feature
+- [ ] Multi-language support
+- [ ] Lawyer reviews and ratings
+- [ ] Advanced analytics dashboard
+- [ ] Mobile native apps (iOS/Android)
+
+---
+
+**Built with ❤️ for the legal community**
