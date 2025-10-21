@@ -55,7 +55,7 @@ export default function BasePayButton({
       return;
     }
 
-    if (amount <= 0) {
+    if (amount < 0) {
       toast.error("Invalid payment amount");
       return;
     }
