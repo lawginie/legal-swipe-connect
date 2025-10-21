@@ -17,23 +17,7 @@ const Index = () => {
 
   useEffect(() => {
     checkAuth();
-    
-    // Listen for wallet disconnect events
-    if (typeof window.ethereum !== "undefined") {
-      const handleAccountsChanged = (accounts: string[]) => {
-        if (accounts.length === 0 && isAuthenticated) {
-          // Wallet disconnected while user is authenticated
-          handleLogout();
-        }
-      };
-
-      window.ethereum.on("accountsChanged", handleAccountsChanged);
-
-      return () => {
-        window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
-      };
-    }
-  }, [isAuthenticated]);
+  }, []);
 
   const handleLogout = () => {
     // Clear all auth data
