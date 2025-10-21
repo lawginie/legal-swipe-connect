@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Wallet } from "lucide-react";
+import { Wallet, ChevronDown, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { BrowserProvider } from "ethers";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Global state to prevent multiple simultaneous connection attempts
 let isGloballyConnecting = false;
@@ -14,6 +20,7 @@ const WalletConnect = () => {
   const navigate = useNavigate();
   const [walletAddress, setWalletAddress] = useState<string | null>(globalWalletAddress);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [authMethod, setAuthMethod] = useState<"base_account" | "metamask" | null>(null);
 
   const handleWalletDisconnect = async () => {
     globalWalletAddress = null;
@@ -69,11 +76,31 @@ const WalletConnect = () => {
   }, []);
 
   const checkWalletConnection = async () => {
+    // Check for Base Account session first
+    const baseWalletSession = localStorage.getItem('base_wallet_session');
+    if (baseWalletSession) {
+      try {
+        const session = JSON.parse(baseWalletSession);
+        const address = session.user.user_metadata.wallet_address;
+        if (address) {
+          globalWalletAddress = address;
+          setWalletAddress(address);
+          setAuthMethod("base_account");
+          return;
+        }
+      } catch (error) {
+        console.error("Error parsing base wallet session:", error);
+        localStorage.removeItem('base_wallet_session');
+      }
+    }
+
+    // Check for MetaMask connection
     if (typeof window.ethereum !== "undefined") {
       try {
         // If we already have a global wallet address, use it
         if (globalWalletAddress) {
           setWalletAddress(globalWalletAddress);
+          setAuthMethod("metamask");
           return;
         }
 
@@ -83,6 +110,7 @@ const WalletConnect = () => {
           const address = accounts[0].address;
           globalWalletAddress = address;
           setWalletAddress(address);
+          setAuthMethod("metamask");
         }
       } catch (error) {
         console.error("Error checking wallet:", error);
@@ -183,16 +211,31 @@ const WalletConnect = () => {
   return (
     <div>
       {walletAddress ? (
-        <Button variant="outline" onClick={disconnectWallet} className="gap-2">
-          <Wallet className="h-4 w-4" />
-          <span className="hidden sm:inline">
-            {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-          </span>
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="gap-1 px-2 sm:px-3">
+              <Wallet className="h-4 w-4" />
+              <span className="hidden sm:inline text-xs">
+                {authMethod === "base_account" ? "Base: " : ""}
+                {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+              </span>
+              <span className="inline sm:hidden text-xs">
+                {walletAddress.slice(0, 4)}...{walletAddress.slice(-3)}
+              </span>
+              <ChevronDown className="h-3 w-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={disconnectWallet} className="text-red-600 cursor-pointer">
+              <LogOut className="h-4 w-4 mr-2" />
+              Disconnect
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ) : (
-        <Button onClick={connectWallet} disabled={isConnecting} className="gap-2">
+        <Button onClick={connectWallet} disabled={isConnecting} size="sm" className="gap-1 px-2 sm:px-3">
           <Wallet className="h-4 w-4" />
-          <span className="hidden sm:inline">
+          <span className="hidden sm:inline text-xs">
             {isConnecting ? "Connecting..." : "Connect Wallet"}
           </span>
         </Button>

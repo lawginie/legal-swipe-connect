@@ -298,11 +298,11 @@ const Discover = ({ guestMode = false, userType = "client" }: DiscoverProps) => 
   return (
     <div className="min-h-screen pb-20" style={{ background: "var(--gradient-primary)" }}>
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border p-4">
+      <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border p-3">
         <div className="max-w-md mx-auto">
           {/* View Mode Toggle (only in guest mode) */}
           {guestMode && (
-            <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="flex items-center justify-center gap-2 mb-3">
               <Button
                 variant={viewMode === 'lawyers' ? 'default' : 'outline'}
                 size="sm"
@@ -324,11 +324,12 @@ const Discover = ({ guestMode = false, userType = "client" }: DiscoverProps) => 
             </div>
           )}
           
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-2">
+            {/* Filter Section - Full Width */}
             <div className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-muted-foreground" />
+              <Filter className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="flex-1">
                   <SelectValue placeholder="Filter by service" />
                 </SelectTrigger>
                 <SelectContent>
@@ -342,17 +343,19 @@ const Discover = ({ guestMode = false, userType = "client" }: DiscoverProps) => 
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center gap-2">
+            
+            {/* Actions Section - Full Width */}
+            <div className="flex items-center justify-between gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowLikedServices(true)}
-                className="relative"
+                className="relative flex-shrink-0"
               >
                 <Heart className="h-4 w-4 mr-1" />
                 Liked
                 {likedCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                     {likedCount}
                   </span>
                 )}

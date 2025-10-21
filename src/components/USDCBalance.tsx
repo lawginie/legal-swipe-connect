@@ -45,12 +45,17 @@ export default function USDCBalance() {
   }, []);
 
   if (balance === null) {
-    return <Badge variant="outline">USDC: --</Badge>;
+    return (
+      <Badge variant="outline" className="text-xs px-2 py-1">
+        <span className="hidden sm:inline">USDC: </span>--
+      </Badge>
+    );
   }
 
   return (
-    <Badge variant="outline" className="gap-1">
-      USDC: <span className="font-medium">{loading ? "..." : balance}</span>
+    <Badge variant="outline" className="gap-1 text-xs px-2 py-1">
+      <span className="hidden sm:inline">USDC: </span>
+      <span className="font-medium">{loading ? "..." : parseFloat(balance).toFixed(2)}</span>
     </Badge>
   );
 }
