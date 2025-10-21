@@ -7,7 +7,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { ArrowLeft, Send } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import USDCPayButton from "@/components/USDCPayButton";
+import BasePayButton from "@/components/BasePayButton";
 
 interface Message {
   id: string;
@@ -347,10 +347,16 @@ const Chat = () => {
                   <p className="text-xs text-muted-foreground">{otherUser.specialization}</p>
                 )}
               </div>
-              {/* Pay with USDC (only when other user has a wallet address) */}
+              {/* Pay with Base Account (only when other user has a wallet address) */}
               {otherUser.wallet_address && (
                 <div className="ml-auto">
-                  <USDCPayButton recipient={otherUser.wallet_address} />
+                  <BasePayButton 
+                    recipient={otherUser.wallet_address}
+                    amount={500}
+                    lawyerName={otherUser.full_name}
+                    serviceName={otherUser.specialization || "Legal Services"}
+                    size="sm"
+                  />
                 </div>
               )}
             </>
