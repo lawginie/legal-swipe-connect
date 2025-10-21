@@ -1,4 +1,4 @@
-import { Home, MessageCircle, User, Briefcase } from "lucide-react";
+import { Home, MessageCircle, User, Briefcase, Settings } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -14,11 +14,13 @@ const BottomNav = ({ userType }: BottomNavProps) => {
     ? [
         { icon: Home, label: "Discover", path: "/" },
         { icon: MessageCircle, label: "Chats", path: "/chats" },
+        { icon: Settings, label: "Settings", path: "/settings" },
         { icon: User, label: "Profile", path: "/profile" },
       ]
     : [
         { icon: Briefcase, label: "Dashboard", path: "/lawyer-dashboard" },
         { icon: MessageCircle, label: "Chats", path: "/chats" },
+        { icon: Settings, label: "Settings", path: "/settings" },
         { icon: User, label: "Profile", path: "/profile" },
       ];
 

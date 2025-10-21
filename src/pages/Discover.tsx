@@ -186,6 +186,19 @@ const Discover = ({ guestMode = false, userType = "client" }: DiscoverProps) => 
         console.log('✅ After filtering:', mockData.length, 'profiles');
       }
 
+      // Apply distance filtering if location is available and settings exist
+      const savedSettings = localStorage.getItem("app_settings");
+      if (savedSettings && userLocation) {
+        const settings = JSON.parse(savedSettings);
+        if (settings.locationEnabled && settings.distance) {
+          mockData = mockData.filter(profile => {
+            if (!profile.distance) return true; // Include profiles without distance data
+            return profile.distance <= settings.distance;
+          });
+          console.log(`✅ After distance filter (${settings.distance}km):`, mockData.length, 'profiles');
+        }
+      }
+
       setProfiles(mockData);
       setCurrentIndex(0);
       
@@ -259,14 +272,28 @@ const Discover = ({ guestMode = false, userType = "client" }: DiscoverProps) => 
         );
       }
 
-      // Calculate distances
+      // Calculate distances and apply filtering
       if (userLocation) {
         processedLawyers = processedLawyers.map(lawyer => ({
           ...lawyer,
           distance: lawyer.latitude && lawyer.longitude
             ? calculateDistance(userLocation.lat, userLocation.lng, lawyer.latitude, lawyer.longitude)
             : undefined
-        })).sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
+        }));
+
+        // Apply distance filtering from settings
+        const savedSettings = localStorage.getItem("app_settings");
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          if (settings.locationEnabled && settings.distance) {
+            processedLawyers = processedLawyers.filter((lawyer: any) => {
+              if (!lawyer.distance) return true; // Include lawyers without distance data
+              return lawyer.distance <= settings.distance;
+            });
+          }
+        }
+
+        processedLawyers.sort((a: any, b: any) => (a.distance || Infinity) - (b.distance || Infinity));
       }
 
       // Map database data to MockProfile structure
