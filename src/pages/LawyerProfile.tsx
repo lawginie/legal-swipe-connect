@@ -337,7 +337,7 @@ const LawyerProfile = ({ lawyer, onBack }: LawyerProfileProps) => {
           <div className="space-y-3">
             {paymentMethod === 'base' ? (
               <BasePayButton
-                recipient={lawyer.walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"} // Demo address
+                recipient="0x523ADBef8c1E48eF08De5Caab059CE5cAd5086C6"
                 amount={getTotalWithConsultation()}
                 serviceName={getSelectedServices().map(s => s.name).join(', ')}
                 lawyerName={lawyer.name}

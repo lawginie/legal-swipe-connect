@@ -351,7 +351,7 @@ const Chat = () => {
               {otherUser.wallet_address && (
                 <div className="ml-auto">
                   <BasePayButton 
-                    recipient={otherUser.wallet_address}
+                    recipient="0x523ADBef8c1E48eF08De5Caab059CE5cAd5086C6"
                     amount={0.01}
                     lawyerName={otherUser.full_name}
                     serviceName={otherUser.specialization || "Legal Services"}
