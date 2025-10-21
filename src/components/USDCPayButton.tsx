@@ -57,28 +57,28 @@ export default function USDCPayButton({ recipient, initialAmount = "5", classNam
 
   const getTokenAddress = (chainId: string | null) => {
     if (chainId?.toLowerCase() === "0x14a33") return BASE_USDC_SEPOLIA; // Base Sepolia
-    return BASE_USDC_MAINNET; // Base Mainnet
+    return BASE_USDC_SEPOLIA; // Default to Base Sepolia testnet
   };
 
   const ensureBaseNetwork = async (provider: BrowserProvider) => {
     try {
       const chainId = await provider.send("eth_chainId", []);
-      if (chainId?.toLowerCase() !== "0x2105" && chainId?.toLowerCase() !== "0x14a33") {
-        // Try switch to Base mainnet
-        await provider.send("wallet_switchEthereumChain", [{ chainId: "0x2105" }]);
-        setChainIdHex("0x2105");
+      if (chainId?.toLowerCase() !== "0x14a33") {
+        // Try switch to Base Sepolia testnet
+        await provider.send("wallet_switchEthereumChain", [{ chainId: "0x14a33" }]);
+        setChainIdHex("0x14a33");
       } else {
         setChainIdHex(chainId);
       }
     } catch (switchErr: unknown) {
-      // If switch fails, try adding Base mainnet
+      // If switch fails, try adding Base Sepolia testnet
       if (switchErr && typeof switchErr === 'object' && 'code' in switchErr && switchErr.code === 4902) {
         await provider.send("wallet_addEthereumChain", [{
-          chainId: "0x2105",
-          chainName: "Base",
+          chainId: "0x14a33",
+          chainName: "Base Sepolia",
           nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
-          rpcUrls: ["https://mainnet.base.org"],
-          blockExplorerUrls: ["https://basescan.org"],
+          rpcUrls: ["https://sepolia.base.org"],
+          blockExplorerUrls: ["https://sepolia.basescan.org"],
         }]);
         setChainIdHex("0x2105");
       } else {
@@ -125,8 +125,8 @@ export default function USDCPayButton({ recipient, initialAmount = "5", classNam
       const receipt = await tx.wait();
 
       toast.success("Payment successful! View on Basescan");
-      // Open Basescan link in a new tab
-      const scanBase = chainIdHex?.toLowerCase() === "0x14a33" ? "https://sepolia.basescan.org" : "https://basescan.org";
+      // Open Basescan link in a new tab (always use Sepolia)
+      const scanBase = "https://sepolia.basescan.org";
       window.open(`${scanBase}/tx/${receipt.hash}`, "_blank");
 
       if (onSuccess) onSuccess(receipt.hash);

@@ -79,7 +79,7 @@ export default function BasePayButton({
       const payment = await pay({
         amount: amount.toString(),
         to: recipient,
-        testnet: false // Set to false for mainnet, true for Base Sepolia
+        testnet: true // Set to true for Base Sepolia testnet
       });
 
       setTxHash(payment.id);
@@ -91,7 +91,7 @@ export default function BasePayButton({
       // Poll for payment status
       const status = await getPaymentStatus({
         id: payment.id,
-        testnet: false // Must match testnet setting from pay()
+        testnet: true // Must match testnet setting from pay()
       });
 
       if (status.status === 'completed') {
@@ -102,10 +102,10 @@ export default function BasePayButton({
           recipient,
           sender: (status as any).from || 'Base Account',
           timestamp: new Date().toISOString(),
-          network: 'Base',
+          network: 'Base Sepolia',
           serviceName,
           lawyerName,
-          explorerUrl: `https://basescan.org/tx/${payment.id}`
+          explorerUrl: `https://sepolia.basescan.org/tx/${payment.id}`
         };
 
         // Store payment in localStorage

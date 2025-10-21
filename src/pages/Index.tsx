@@ -137,7 +137,7 @@ const Index = () => {
           capabilities: {
             signInWithEthereum: { 
               nonce, 
-              chainId: '0x2105' // Base Mainnet (8453)
+              chainId: '0x14a33' // Base Sepolia Testnet (84532)
             }
           }
         }]
