@@ -80,7 +80,7 @@ export default function USDCPayButton({ recipient, initialAmount = "5", classNam
           rpcUrls: ["https://sepolia.base.org"],
           blockExplorerUrls: ["https://sepolia.basescan.org"],
         }]);
-        setChainIdHex("0x2105");
+        setChainIdHex("0x14a33");
       } else {
         throw switchErr;
       }
