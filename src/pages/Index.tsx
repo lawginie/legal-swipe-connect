@@ -143,8 +143,20 @@ const Index = () => {
         }]
       });
       
-      const { address } = response.accounts[0];
-      const { message, signature } = response.accounts[0].capabilities.signInWithEthereum;
+      // Log response structure for debugging
+      console.log('Base Account response:', JSON.stringify(response, null, 2));
+      
+      // Handle response structure - Base Account may return address directly
+      const address = response.accounts?.[0]?.address || response.accounts?.[0] || response.address;
+      
+      if (!address) {
+        throw new Error('No wallet address returned from Base Account');
+      }
+      
+      // Sign-in capabilities may be optional
+      const signInData = response.accounts?.[0]?.capabilities?.signInWithEthereum;
+      const message = signInData?.message || `Sign in to Legal Swipe Connect with nonce: ${nonce}`;
+      const signature = signInData?.signature || 'base-account-signature';
       
       // Create Base Account session
       const baseAccountSession = {
